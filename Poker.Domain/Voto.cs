@@ -1,3 +1,5 @@
+using Poker.Domain.Identity;
+
 namespace Poker.Domain
 {
     public class Voto
