@@ -1,17 +1,15 @@
 namespace Poker.Domain
 {
-    public class Carta
+    public class Carta: BaseEntity
     {
-        public int ID { get; set; }
         public int Valor { get; set; }
         public Carta()
         {
 
         }
 
-        public Carta(int id, int valor)
+        public Carta(int valor)
         {
-            this.ID = id;
             this.Valor = valor;
         }
     }

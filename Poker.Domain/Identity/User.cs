@@ -9,5 +9,14 @@ namespace Poker.Domain.Identity
         [Column(TypeName = "nvarchar(150)")]
         public string FullName { get; set; }
         public List<UserRole> UserRoles {get; set;}
+
+        public User()
+        {
+
+        }
+        public User(int id)
+        {
+            this.Id = id;
+        }
     }
 }

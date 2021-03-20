@@ -1,5 +1,6 @@
 using AutoMapper;
 using Poker.API.DTOs;
+using Poker.Domain;
 using Poker.Domain.Identity;
 
 namespace Poker.API.Helpers
@@ -10,6 +11,10 @@ namespace Poker.API.Helpers
         {
             CreateMap<User,UserDTO>().ReverseMap();
             CreateMap<User,UserLoginDTO>().ReverseMap();
+            CreateMap<Carta,CartaDTO>().ReverseMap();
+            CreateMap<Carta,CartaPostDTO>().ReverseMap();
+            CreateMap<Historia, HistoriaDTO>().ReverseMap();
+            CreateMap<Historia, HistoriaPostDTO>().ReverseMap();
         }
     }
 }

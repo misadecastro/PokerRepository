@@ -1,8 +1,15 @@
+using System.Collections.Generic;
+
 namespace Poker.Domain
 {
-    public class Historia
+    public class Historia: BaseEntity
     {
-        public int ID { get; private set; }
-        public string Descricao { get; private set; }
+        public string Descricao { get; set; }
+
+        public IEnumerable<Voto> Votos { get; set; }
+
+        public Historia(){
+            
+        }
     }
 }

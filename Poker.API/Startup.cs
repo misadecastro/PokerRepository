@@ -1,16 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -18,12 +10,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Poker.API.Models;
+using Poker.CrossCutting;
 using Poker.Domain.Identity;
 using Poker.Repository;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Text;
 
 namespace Poker.API
 {
@@ -38,12 +36,9 @@ namespace Poker.API
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddDbContext<PokerContext>(
-                x => x.UseSqlite(Configuration.GetConnectionString("DefaultConnection"))
-            );
+        {            
 
-            #region COnfigurações do Identity
+            #region Configurações do Identity
             IdentityBuilder builder = services.AddIdentityCore<User>(options => {
                 options.Password.RequireDigit = false;
                 options.Password.RequireNonAlphanumeric = false;
@@ -56,7 +51,8 @@ namespace Poker.API
             builder.AddEntityFrameworkStores<PokerContext>();
             builder.AddRoleValidator<RoleValidator<Role>>();
             builder.AddRoleManager<RoleManager<Role>>();
-            builder.AddSignInManager<SignInManager<User>>();
+            builder.AddSignInManager<SignInManager<User>>();            
+
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options => {
@@ -76,16 +72,17 @@ namespace Poker.API
                 .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
             })
+            .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
             .AddNewtonsoftJson(opt => {
                 opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
 
             #endregion
-            services.AddControllers();            
-            services.AddScoped<IPokerRepository, PokerRepository>();
+            services.AddControllers();
+            services.InjectDependenciesPoker(Configuration);
             services.AddAutoMapper();        
             services.AddCors();
-
+            services.AddScoped<AuthenticatedUser>();
             services.AddSwaggerGen(SwaggerConfiguration);
         }
 
@@ -97,11 +94,14 @@ namespace Poker.API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
             app.UseRouting();
 
             app.UseAuthorization();
+            
+            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {
