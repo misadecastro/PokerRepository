@@ -142,9 +142,7 @@ namespace Poker.Repository.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<int>(nullable: false),
-                    RoleId = table.Column<int>(nullable: false),
-                    UserId1 = table.Column<int>(nullable: true),
-                    RoleId1 = table.Column<int>(nullable: true)
+                    RoleId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -156,23 +154,11 @@ namespace Poker.Repository.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AspNetUserRoles_AspNetRoles_RoleId1",
-                        column: x => x.RoleId1,
-                        principalTable: "AspNetRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
                         name: "FK_AspNetUserRoles_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AspNetUserRoles_AspNetUsers_UserId1",
-                        column: x => x.UserId1,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -201,31 +187,31 @@ namespace Poker.Repository.Migrations
                 {
                     ID = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    UsuarioId = table.Column<int>(nullable: true),
-                    CartaID = table.Column<int>(nullable: true),
-                    HistoriaID = table.Column<int>(nullable: true)
+                    UsuarioId = table.Column<int>(nullable: false),
+                    CartaId = table.Column<int>(nullable: false),
+                    HistoriaId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Votos", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Votos_Cartas_CartaID",
-                        column: x => x.CartaID,
+                        name: "FK_Votos_Cartas_CartaId",
+                        column: x => x.CartaId,
                         principalTable: "Cartas",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Votos_Historias_HistoriaID",
-                        column: x => x.HistoriaID,
+                        name: "FK_Votos_Historias_HistoriaId",
+                        column: x => x.HistoriaId,
                         principalTable: "Historias",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Votos_AspNetUsers_UsuarioId",
                         column: x => x.UsuarioId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -255,16 +241,6 @@ namespace Poker.Repository.Migrations
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUserRoles_RoleId1",
-                table: "AspNetUserRoles",
-                column: "RoleId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUserRoles_UserId1",
-                table: "AspNetUserRoles",
-                column: "UserId1");
-
-            migrationBuilder.CreateIndex(
                 name: "EmailIndex",
                 table: "AspNetUsers",
                 column: "NormalizedEmail");
@@ -276,14 +252,14 @@ namespace Poker.Repository.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Votos_CartaID",
+                name: "IX_Votos_CartaId",
                 table: "Votos",
-                column: "CartaID");
+                column: "CartaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Votos_HistoriaID",
+                name: "IX_Votos_HistoriaId",
                 table: "Votos",
-                column: "HistoriaID");
+                column: "HistoriaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Votos_UsuarioId",

@@ -7,6 +7,7 @@ namespace Poker.Repository
     {
         public VotoRepository(PokerContext context) : base(context)
         {
-        }
+            
+        }        
     }
 }

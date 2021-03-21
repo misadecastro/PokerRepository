@@ -20,7 +20,7 @@ namespace Poker.Facade
         public async Task<Voto> Votar(Carta carta, Historia historia, User user)
         {
             carta = await _cartaRepository.GetAsync(carta.ID);
-            historia = await _historiaRepository.GetAsync(historia.ID);
+            historia = await _historiaRepository.GetAsync(historia.ID, true);
             var voto = new Voto(user, carta, historia);
 
             if (!voto.Invalid)

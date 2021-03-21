@@ -22,7 +22,7 @@ namespace Poker.Repository
             this.dbSet = context.Set<T>();
         }
 
-        public async Task<bool> SaveChangesAsync()
+        public virtual async Task<bool> SaveChangesAsync()
         {
             return (await _context.SaveChangesAsync()) > 0;
         }

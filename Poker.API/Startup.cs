@@ -3,16 +3,20 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Poker.API.Hubs;
 using Poker.API.Models;
+using Poker.API.RabbitMQ;
 using Poker.CrossCutting;
 using Poker.Domain.Identity;
 using Poker.Repository;
@@ -79,11 +83,13 @@ namespace Poker.API
 
             #endregion
             services.AddControllers();
-            services.InjectDependenciesPoker(Configuration);
-            services.AddAutoMapper();        
+            services.InjectDependenciesPoker(Configuration);            
+            services.AddAutoMapper();
+            services.AddSignalR();
             services.AddCors();
             services.AddScoped<AuthenticatedUser>();
-            services.AddSwaggerGen(SwaggerConfiguration);
+            services.AddScoped<PublishVotoMQ>();
+            services.AddSwaggerGen(SwaggerConfiguration);            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -94,7 +100,6 @@ namespace Poker.API
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.UseHttpsRedirection();
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
             app.UseRouting();
@@ -106,6 +111,7 @@ namespace Poker.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<VotoHub>("/votohub");
             });
 
             app.UseSwagger(c =>
@@ -116,7 +122,16 @@ namespace Poker.API
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Plan Poker API");
-            });
+            });            
+
+            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"hubs")),
+                RequestPath = new PathString("/hubs")
+            }
+
+            );
         }
 
         private void SwaggerConfiguration(SwaggerGenOptions c)

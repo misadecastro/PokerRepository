@@ -24,6 +24,37 @@ namespace Poker.Repository
             base.OnModelCreating(modelBuilder);
             modelBuilder.Ignore<Notifiable>();
             modelBuilder.Ignore<Notification>();
+            modelBuilder.Entity<UserRole>(userRole => 
+            {
+                userRole.HasKey(ur => new {ur.UserId, ur.RoleId});
+                userRole.HasOne(ur => ur.Role)
+                .WithMany(r => r.UserRoles)
+                .HasForeignKey(ur => ur.RoleId)
+                .IsRequired();
+                userRole.HasOne(ur => ur.User)
+                .WithMany(r => r.UserRoles)
+                .HasForeignKey(ur => ur.UserId)
+                .IsRequired();
+            });            
+
+            modelBuilder.Entity<Historia>()
+            .HasMany(c => c.Votos)
+            .WithOne(e => e.Historia);
+
+            modelBuilder.Entity<User>()
+            .HasMany(c => c.Votos)
+            .WithOne(e => e.Usuario);
+
+            modelBuilder.Entity<Voto>(votoRole => 
+            {
+                votoRole.HasOne(c => c.Historia)
+                .WithMany(e => e.Votos)
+                .IsRequired();
+                votoRole.HasOne(c => c.Usuario)
+                .WithMany(e => e.Votos)
+                .IsRequired();
+            });
+            
         }
     }
 }

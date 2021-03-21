@@ -231,19 +231,9 @@ namespace Poker.Repository.Migrations
                     b.Property<int>("RoleId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("RoleId1")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("UserId1")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("RoleId");
-
-                    b.HasIndex("RoleId1");
-
-                    b.HasIndex("UserId1");
 
                     b.ToTable("AspNetUserRoles");
                 });
@@ -254,20 +244,20 @@ namespace Poker.Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("CartaID")
+                    b.Property<int>("CartaId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("HistoriaID")
+                    b.Property<int>("HistoriaId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("UsuarioId")
+                    b.Property<int>("UsuarioId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("CartaID");
+                    b.HasIndex("CartaId");
 
-                    b.HasIndex("HistoriaID");
+                    b.HasIndex("HistoriaId");
 
                     b.HasIndex("UsuarioId");
 
@@ -312,40 +302,38 @@ namespace Poker.Repository.Migrations
 
             modelBuilder.Entity("Poker.Domain.Identity.UserRole", b =>
                 {
-                    b.HasOne("Poker.Domain.Identity.Role", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Poker.Domain.Identity.Role", "Role")
                         .WithMany("UserRoles")
-                        .HasForeignKey("RoleId1");
-
-                    b.HasOne("Poker.Domain.Identity.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Poker.Domain.Identity.User", "User")
                         .WithMany("UserRoles")
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Poker.Domain.Voto", b =>
                 {
                     b.HasOne("Poker.Domain.Carta", "Carta")
                         .WithMany()
-                        .HasForeignKey("CartaID");
+                        .HasForeignKey("CartaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Poker.Domain.Historia", "Historia")
-                        .WithMany()
-                        .HasForeignKey("HistoriaID");
+                        .WithMany("Votos")
+                        .HasForeignKey("HistoriaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Poker.Domain.Identity.User", "Usuario")
-                        .WithMany()
-                        .HasForeignKey("UsuarioId");
+                        .WithMany("Votos")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

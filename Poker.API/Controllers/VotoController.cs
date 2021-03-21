@@ -5,8 +5,11 @@ using AutoMapper;
 using Flunt.Notifications;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Poker.API.DTOs;
+using Poker.API.Hubs;
 using Poker.API.Models;
+using Poker.API.RabbitMQ;
 using Poker.Domain;
 using Poker.Domain.Identity;
 using Poker.Facade.Interfaces;
@@ -20,11 +23,15 @@ namespace Poker.API.Controllers
         private readonly IVotoFacade _facade;
         private readonly IMapper _mapper;
         private readonly AuthenticatedUser _usuarioLogado;
-        public VotoController(IVotoFacade facade, IMapper mapper, AuthenticatedUser usuarioLogado)
+        private readonly IHubContext<VotoHub> _votoHub;
+        private readonly PublishVotoMQ _publishVotoMQ;
+        public VotoController(IVotoFacade facade, IMapper mapper, AuthenticatedUser usuarioLogado, IHubContext<VotoHub> votoHub, PublishVotoMQ publishVotoMQ)
         {
             this._facade = facade;
             this._mapper = mapper;
             this._usuarioLogado = usuarioLogado;
+            this._votoHub = votoHub;
+            this._publishVotoMQ = publishVotoMQ;
         }
 
         /// <summary>
@@ -40,13 +47,15 @@ namespace Poker.API.Controllers
             try
             {
                 var carta = _mapper.Map<Carta>(voto.Carta);
-                var historia = _mapper.Map<Historia>(voto.Historia);
-                var usuario = new User(_usuarioLogado.Id);
+                var historia = _mapper.Map<Historia>(voto.Historia);               
                 
-                var votoRegistrado = await _facade.Votar(carta, historia, usuario);
+                var votoRegistrado = await _facade.Votar(carta, historia, _usuarioLogado.Usuario);
                 
                 if (votoRegistrado.Invalid)
                     return BadRequest(votoRegistrado.Notifications);
+
+                await _votoHub.Clients.All.SendAsync("ReceiveMessage", string.Format("Usuario: {0} - Historia: {1} - Voto: {2}", _usuarioLogado.Usuario.UserName, votoRegistrado.HistoriaId, votoRegistrado.CartaId));
+                _publishVotoMQ.Publish(votoRegistrado);
 
                 return Ok(votoRegistrado);
             }

@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Poker.Repository.Interfaces
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Poker.CrossCutting", "Poker.CrossCutting\Poker.CrossCutting.csproj", "{FFB4E6B0-EB7B-45D5-808E-030F567B6A54}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Poker.DTOs", "Poker.DTOs\Poker.DTOs.csproj", "{EB450BBC-7852-4ED4-8326-6EC4AC86ABD0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Poker.DTOs", "Poker.DTOs\Poker.DTOs.csproj", "{EB450BBC-7852-4ED4-8326-6EC4AC86ABD0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

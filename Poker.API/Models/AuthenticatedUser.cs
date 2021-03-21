@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Poker.Domain.Identity;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -8,24 +10,15 @@ namespace Poker.API.Models
     public class AuthenticatedUser
     {
 		private readonly IHttpContextAccessor _accessor;
+        private readonly UserManager<User> _userManager;
 
-		public AuthenticatedUser(IHttpContextAccessor accessor)
+        public AuthenticatedUser(IHttpContextAccessor accessor, UserManager<User> userManager)
 		{
 			_accessor = accessor;
-			this.Nome = _accessor.HttpContext.User.Identity.Name;
-            string idUsuario = _accessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            int id = 0;
-            if (int.TryParse(idUsuario, out id))
-                this.Id = id;
+            _userManager = userManager;			            
+            this.Usuario = _userManager.GetUserAsync(_accessor.HttpContext.User).Result;
         }
-
-		public string Nome { get; private set; }
-        public int Id { get; private set; }
-
-        public IEnumerable<Claim> GetClaimsIdentity()
-        {
-            return _accessor.HttpContext.User.Claims;
-        }
+        public User Usuario { get; private set; }
+        
     }
 }
